@@ -6,6 +6,10 @@ export class IndexedBuffer {
 
   constructor() {}
 
+  get length() {
+    return this.buffer.length;
+  }
+
   get eof() {
     return this.index === this.buffer.length;
   }
@@ -34,7 +38,23 @@ export class IndexedBuffer {
     return this.readStandard(this.buffer.readUInt32BE, 4);
   }
 
-  readBytes(len: number) {
+  readFloatLE() {
+    return this.readStandard(this.buffer.readFloatLE, 4);
+  }
+
+  readFloatBE() {
+    return this.readStandard(this.buffer.readFloatBE, 4);
+  }
+
+  readBigInt(len: number, rev: boolean = true): bigint {
+    let bytes = Array.from(this.readBytes(len))
+      .map((b: number) => b.toString(16))
+      .map((b: string) => (b.length % 2 ? "0" + b : b));
+    bytes = rev ? bytes.reverse() : bytes;
+    return BigInt("0x" + bytes.join(""));
+  }
+
+  readBytes(len: number): Buffer {
     if (len === 0) {
       return Buffer.alloc(0);
     } else if (len > 0) {
@@ -72,9 +92,43 @@ export class IndexedBuffer {
     this.writeStandard(this.buffer.writeUInt32BE, val, 4);
   }
 
+  writeFloatLE(val: number) {
+    this.writeStandard(this.buffer.writeFloatLE, val, 4);
+  }
+
+  writeFloatBE(val: number) {
+    this.writeStandard(this.buffer.writeFloatBE, val, 4);
+  }
+
   writeBytes(buffer: Buffer) {
-    this.appendBytes(buffer);
+    buffer.copy(this.buffer, this.index);
     this.index += buffer.length;
+  }
+
+  writeBigInt(bi: bigint, size: number = 32, rev: boolean = true): void {
+    let hex = bi.toString(16);
+    if (hex.length % 2) {
+      hex = "0" + hex;
+    }
+
+    const len = hex.length / 2;
+    const u8 = new Uint8Array(len);
+
+    let i = 0;
+    let j = 0;
+    while (i < len) {
+      u8[i] = parseInt(hex.slice(j, j + 2), 16);
+      i += 1;
+      j += 2;
+    }
+
+    const newArray = [];
+    for (let i = 0; i < size; i++) {
+      const readIdx = rev ? size - i : i;
+      newArray[i] = u8[readIdx] || 0;
+    }
+
+    this.writeBytes(Buffer.from(newArray));
   }
 
   appendBytes(buffer: Buffer) {

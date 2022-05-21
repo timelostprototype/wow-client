@@ -7,14 +7,14 @@ export class TimeSyncHandler extends GameEventHandler {
 
   static opcode = GameOpcode.SMSG_TIME_SYNC_REQ;
   handle(gp: GamePacket) {
-    const counter = gp.readUnsignedInt();
+    const counter = gp.readUInt32LE();
     const ellapsed = Date.now() - this.connectionTime;
     const app = new GamePacket(
       GameOpcode.CMSG_TIME_SYNC_RESP,
       GamePacket.OPCODE_SIZE_INCOMING + 64
     );
-    app.writeUnsignedInt(counter); // counter
-    app.writeUnsignedInt(ellapsed); //uptime
+    app.writeUInt32LE(counter); // counter
+    app.writeUInt32LE(ellapsed); //uptime
 
     this.game.send(app);
   }

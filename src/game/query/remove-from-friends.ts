@@ -9,7 +9,7 @@ export class RemoveFromFriends extends ClientRequest {
       GameOpcode.CMSG_DEL_FRIEND,
       GamePacket.OPCODE_SIZE_INCOMING + 64
     );
-    app.writeUnsignedInt(guid);
+    app.writeUInt32LE(guid);
 
     return new Promise((resolve) => {
       this.game.once("packet:receive:SMSG_FRIEND_STATUS", (gp) => {

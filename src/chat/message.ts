@@ -77,9 +77,9 @@ export class Message {
     isGm: boolean = false
   ): Promise<Message | undefined> {
     const guid2 = gp.readGUID();
-    const len = gp.readUnsignedInt();
-    const text = gp.readString(len);
-    const flags = gp.readUnsignedByte();
+    const len = gp.readUInt32LE();
+    const text = gp.readBytes(len).toString();
+    const flags = gp.readUInt8();
     return new Message(text);
   }
 }

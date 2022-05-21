@@ -1,20 +1,18 @@
-import * as ByteBuffer from "byte-buffer";
+import { IndexedBuffer } from "./indexed-buffer";
 
-export class Packet extends ByteBuffer {
+export class Packet extends IndexedBuffer {
   // Creates a new packet with given opcode from given source or length
   constructor(
     public opcode: number,
-    source: any,
+    source: Buffer | number,
     public outgoing: boolean = true
   ) {
-    super(source, ByteBuffer.LITTLE_ENDIAN);
-
-    // Holds the opcode for this packet
-    this.opcode = opcode;
-
-    // Whether this packet is outgoing or incoming
-    this.outgoing = outgoing;
-
+    super();
+    if (typeof source === "number") {
+      this.buffer = Buffer.alloc(source);
+    } else {
+      this.buffer = source;
+    }
     // Seek past opcode to reserve space for it when finalizing
     this.index = this.headerSize;
   }
@@ -27,7 +25,7 @@ export class Packet extends ByteBuffer {
 
   // Body size in bytes
   get bodySize() {
-    return this.length - this.headerSize;
+    return this.buffer.length - this.headerSize;
   }
 
   // Retrieves the name of the opcode for this packet (if available)
@@ -39,8 +37,8 @@ export class Packet extends ByteBuffer {
   toString() {
     const opcode = ("0000" + this.opcode.toString(16).toUpperCase()).slice(-4);
     return `\u001b[2m[0x${opcode}] ${this.opcodeName || "UNKNOWN"};\t Length: ${
-      this.length
-    }; Body: ${this.bodySize}; Index: ${this._index}\u001b[22m`;
+      this.buffer.length
+    }; Body: ${this.bodySize}; Index: ${this.index}\u001b[22m`;
   }
 
   // Finalizes this packet
@@ -51,12 +49,13 @@ export class Packet extends ByteBuffer {
   readRawString(): string {
     const bytes = [];
     while (bytes.indexOf(0) === -1) {
-      bytes.push(this.readUnsignedByte());
+      bytes.push(this.readUInt8());
     }
     bytes.pop();
     return bytes.map((x) => String.fromCharCode(x)).join("");
   }
 
+  /*
   readBigInt(len: number, rev: boolean = true): bigint {
     let bytes = Array.from(this.read(len)._raw)
       .map((b: number) => b.toString(16))
@@ -90,11 +89,11 @@ export class Packet extends ByteBuffer {
 
     this.write(newArray);
   }
-
+*/
   writeRawString(str: string) {
     str.split("").forEach((x) => {
-      this.writeUnsignedByte(x.charCodeAt(0));
+      this.writeUInt8(x.charCodeAt(0));
     });
-    this.writeUnsignedByte(0);
+    this.writeUInt8(0);
   }
 }

@@ -18,7 +18,7 @@ export class WhisperMessage extends Message {
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
     const b = gp.readGUID();
-    const len = gp.readUnsignedInt();
+    const len = gp.readUInt32LE();
     const text = gp.readRawString();
     return new WhisperMessage(text);
   }
@@ -30,9 +30,9 @@ export class WhisperMessage extends Message {
   ): Promise<GamePacket> {
     const size = 64 + message.length;
     const app = new GamePacket(GameOpcode.CMSG_MESSAGE_CHAT, size);
-    app.writeUnsignedInt(MessageType.CHAT_MSG_WHISPER);
-    app.writeUnsignedInt(addon ? Language.LANG_ADDON : Language.LANG_UNIVERSAL);
-    app.writeString(recipientName + "\0");
+    app.writeUInt32LE(MessageType.CHAT_MSG_WHISPER);
+    app.writeUInt32LE(addon ? Language.LANG_ADDON : Language.LANG_UNIVERSAL);
+    app.writeRawString(recipientName);
     app.writeRawString(message);
     return app;
   }

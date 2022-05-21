@@ -16,28 +16,28 @@ export class WhoRequest extends ClientRequest {
   async send(name = "", min = 0, max = 100): Promise<WhoResponseCharacter[]> {
     const app = new GamePacket(GameOpcode.CMSG_WHO, 64);
 
-    app.writeUnsignedInt(min);
-    app.writeUnsignedInt(max);
-    app.writeCString(name);
-    app.writeCString("");
-    app.writeUnsignedInt(255);
-    app.writeUnsignedInt(255);
-    app.writeUnsignedInt(0);
-    app.writeUnsignedInt(0);
+    app.writeUInt32LE(min);
+    app.writeUInt32LE(max);
+    app.writeRawString(name);
+    app.writeRawString("");
+    app.writeUInt32LE(255);
+    app.writeUInt32LE(255);
+    app.writeUInt32LE(0);
+    app.writeUInt32LE(0);
 
     return new Promise((resolve) => {
-      this.game.once("packet:receive:SMSG_WHO", (gp) => {
+      this.game.once("packet:receive:SMSG_WHO", (gp: GamePacket) => {
         const results = [];
-        const displayCount = gp.readUnsignedInt();
-        const matchCount = gp.readUnsignedInt();
+        const displayCount = gp.readUInt32LE();
+        const matchCount = gp.readUInt32LE();
         for (let i = 0; i < displayCount; i++) {
           const name = gp.readRawString();
           const guild = gp.readRawString();
-          const level = gp.readUnsignedInt();
-          const clazz = gp.readUnsignedInt();
-          const race = gp.readUnsignedInt();
-          const gender = gp.readUnsignedByte();
-          const zone = gp.readUnsignedInt();
+          const level = gp.readUInt32LE();
+          const clazz = gp.readUInt32LE();
+          const race = gp.readUInt32LE();
+          const gender = gp.readUInt8();
+          const zone = gp.readUInt32LE();
           results.push({
             name,
             guild,

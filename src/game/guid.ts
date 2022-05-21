@@ -7,15 +7,12 @@ export class GUID {
   public raw: any;
 
   // Creates a new GUID
-  constructor(buffer) {
-    // Holds raw byte representation
-    this.raw = buffer;
-
+  constructor(public buffer: Buffer) {
     // Holds low-part
-    this.low = buffer.readUnsignedInt();
+    this.low = buffer.readUint32LE();
 
     // Holds high-part
-    this.high = buffer.readUnsignedInt();
+    this.high = buffer.readUint32LE(4);
   }
 
   // Short string representation of this GUID

@@ -24,7 +24,7 @@ export class RealmsHandler extends EventEmitter {
     const ap = new AuthPacket(AuthOpcode.REALM_LIST, 1 + 4);
 
     // Per WoWDev, the opcode is followed by an unknown uint32
-    ap.writeUnsignedInt(0x00);
+    ap.writeUInt32LE(0x00);
 
     this.session.auth.send(ap);
 
@@ -33,32 +33,32 @@ export class RealmsHandler extends EventEmitter {
 
   // Realm list refresh handler (REALM_LIST)
   handleRealmList(ap: AuthPacket) {
-    ap.readShort(); // packet-size
-    ap.readUnsignedInt(); // (?)
+    ap.readUInt16LE(); // packet-size
+    ap.readUInt32LE(); // (?)
 
-    const count = ap.readShort(); // number of realms
+    const count = ap.readUInt16LE(); // number of realms
 
     this.list.length = 0;
 
     for (let i = 0; i < count; ++i) {
       const realm = new Realm();
 
-      realm.icon = ap.readUnsignedByte();
-      realm.lock = ap.readUnsignedByte();
-      realm.flags = ap.readUnsignedByte();
-      realm.name = ap.readCString();
-      realm.address = ap.readCString();
-      realm.population = ap.readFloat();
-      realm.characters = ap.readUnsignedByte();
-      realm.timezone = ap.readUnsignedByte();
-      realm.id = ap.readUnsignedByte();
+      realm.icon = ap.readUInt8();
+      realm.lock = ap.readUInt8();
+      realm.flags = ap.readUInt8();
+      realm.name = ap.readRawString();
+      realm.address = ap.readRawString();
+      realm.population = ap.readUInt32LE();
+      realm.characters = ap.readUInt8();
+      realm.timezone = ap.readUInt8();
+      realm.id = ap.readUInt8();
 
       // TODO: Introduce magic constants such as REALM_FLAG_SPECIFYBUILD
       if (realm.flags & 0x04) {
-        realm.majorVersion = ap.readUnsignedByte();
-        realm.minorVersion = ap.readUnsignedByte();
-        realm.patchVersion = ap.readUnsignedByte();
-        realm.build = ap.readUnsignedShort();
+        realm.majorVersion = ap.readUInt8();
+        realm.minorVersion = ap.readUInt8();
+        realm.patchVersion = ap.readUInt8();
+        realm.build = ap.readUInt8();
       }
 
       this.list.push(realm);

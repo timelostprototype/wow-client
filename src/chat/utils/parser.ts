@@ -23,15 +23,15 @@ export class MessageParser {
     gp: GamePacket,
     isGm: boolean = false
   ): Promise<Message | undefined> {
-    var type = gp.readUnsignedByte(); // type
-    const lang = gp.readUnsignedInt(); // language
+    var type = gp.readUInt8(); // type
+    const lang = gp.readUInt32LE(); // language
     const guid = gp.readGUID();
-    const unk1 = gp.readUnsignedInt();
+    const unk1 = gp.readUInt32LE();
 
     let senderName = "";
     if (isGm) {
-      const nameLen = gp.readUnsignedInt();
-      senderName = gp.readString(nameLen);
+      const nameLen = gp.readUInt32LE();
+      senderName = gp.readBytes(nameLen).toString();
     } else {
       senderName = await new NameQuery(this.client.game).send(guid.toNumber());
     }

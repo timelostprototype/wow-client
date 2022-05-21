@@ -89,7 +89,7 @@ export class Socket extends EventEmitter {
         console.debug("\t\u001b[36m⟸\u001b[0m", packet.toString());
       }
 
-      this.socket.write(packet._raw);
+      this.socket.write(packet.buffer);
 
       this.emit("packet:send", packet);
 

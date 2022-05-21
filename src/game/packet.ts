@@ -37,24 +37,25 @@ export class GamePacket extends Packet {
 
   // Reads GUID from this packet
   readGUID() {
-    return new GUID(this.read(GUID.LENGTH));
+    return new GUID(this.readBytes(GUID.LENGTH));
   }
 
   // Writes given GUID to this packet
-  writeGUID(guid) {
-    this.write(guid.raw);
+  writeGUID(guid: GUID) {
+    this.writeUInt32LE(guid.low);
+    this.writeUInt32LE(guid.high);
     return this;
   }
 
   readPackedGUID() {
-    const guidMark = this.readUnsignedByte();
+    const guidMark = this.readUInt8();
     let guid = 0;
     for (let i = 0; i < 8; ++i) {
       if (guidMark & (1 << i)) {
-        if (this.index + 1 > this.length) {
-          throw "Buffer exception " + this.index + " >= " + this.length;
+        if (this.index + 1 > this.buffer.length) {
+          throw "Buffer exception " + this.index + " >= " + this.buffer.length;
         }
-        const bit = this.readUnsignedByte();
+        const bit = this.readUInt8();
         guid |= bit << (i * 8);
       }
     }

@@ -13,10 +13,10 @@ export class ChannelMessage extends Message {
   }
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
-    const channelName = gp.readCString();
-    const unknown = gp.readUnsignedInt();
+    const channelName = gp.readRawString();
+    const unknown = gp.readUInt32LE();
     const len = gp.length - gp.index - 2; // channel buffer min size
-    const text = gp.readString(len);
+    const text = gp.readBytes(len).toString();
     return new ChannelMessage(text, channelName);
   }
 
@@ -31,9 +31,9 @@ export class ChannelMessage extends Message {
   ): Promise<GamePacket> {
     const size = 64 + message.length;
     const app = new GamePacket(GameOpcode.CMSG_MESSAGE_CHAT, size);
-    app.writeUnsignedInt(ChannelMessage.type);
-    app.writeUnsignedInt(addon ? Language.LANG_ADDON : Language.LANG_UNIVERSAL);
-    app.writeString(channel + "\0");
+    app.writeUInt32LE(ChannelMessage.type);
+    app.writeUInt32LE(addon ? Language.LANG_ADDON : Language.LANG_UNIVERSAL);
+    app.writeRawString(channel + "\0");
     app.writeRawString(message);
     return app;
   }

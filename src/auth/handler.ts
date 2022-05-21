@@ -72,21 +72,22 @@ export class AuthHandler extends Socket {
       AuthOpcode.LOGON_CHALLENGE,
       4 + 29 + 1 + this.account.length
     );
-    ap.writeByte(0x00);
-    ap.writeShort(30 + this.account.length);
+    ap.writeUInt8(0x00);
+    ap.writeUInt16LE(30 + this.account.length);
 
-    ap.writeString(game); // game string
-    ap.writeByte(majorVersion); // v1 (major)
-    ap.writeByte(minorVersion); // v2 (minor)
-    ap.writeByte(patchVersion); // v3 (patch)
-    ap.writeShort(build); // build
-    ap.writeString(platform); // platform
-    ap.writeString(os); // os
-    ap.writeString(locale); // locale
-    ap.writeUnsignedInt(timezone); // timezone
-    ap.writeUnsignedInt(0); // ip
-    ap.writeByte(this.account.length); // account length
-    ap.writeString(this.account); // account
+    const rawGameBytes = game.split("").map((x) => x.charCodeAt(0));
+    ap.writeBytes(Buffer.from(game)); // game string
+    ap.writeUInt8(majorVersion); // v1 (major)
+    ap.writeUInt8(minorVersion); // v2 (minor)
+    ap.writeUInt8(patchVersion); // v3 (patch)
+    ap.writeUInt16LE(build); // build
+    ap.writeBytes(Buffer.from(platform)); // platform
+    ap.writeBytes(Buffer.from(os)); // os
+    ap.writeBytes(Buffer.from(locale)); // locale
+    ap.writeUInt32LE(timezone); // timezone
+    ap.writeUInt32LE(0); // ip
+    ap.writeUInt8(this.account.length); // account length
+    ap.writeBytes(Buffer.from(this.account)); // account
 
     this.send(ap);
 
@@ -120,8 +121,8 @@ export class AuthHandler extends Socket {
 
   // Logon challenge handler (LOGON_CHALLENGE)
   async handleLogonChallenge(ap: AuthPacket) {
-    ap.readUnsignedByte();
-    const status = ap.readUnsignedByte();
+    ap.readUInt8();
+    const status = ap.readUInt8();
 
     switch (status) {
       case ChallengeOpcode.SUCCESS:
@@ -129,16 +130,16 @@ export class AuthHandler extends Socket {
 
         const B = ap.readBigInt(32, false); // B
 
-        const glen = ap.readUnsignedByte(); // g-length
+        const glen = ap.readUInt8(); // g-length
         const g = ap.readBigInt(glen); // g
 
-        const Nlen = ap.readUnsignedByte(); // n-length
+        const Nlen = ap.readUInt8(); // n-length
         const N = ap.readBigInt(Nlen); // N
 
         const salt = ap.readBigInt(32, false); // salt
 
-        ap.read(16); // unknown
-        ap.readUnsignedByte(); // security flags
+        ap.readBytes(16); // unknown
+        ap.readUInt8(); // security flags
 
         const srp6aNimbusRoutines = new SRPRoutines(
           new SRPParameters({ g, N }, SRPParameters.H.SHA1)
@@ -250,15 +251,15 @@ export class AuthHandler extends Socket {
           AuthOpcode.LOGON_PROOF,
           1 + 32 + 20 + 20 + 2
         );
-        lpp.write(reverseArrayBuffer(A));
-        lpp.write(M1);
-        lpp.write(new Array(20)); // CRC hash
-        lpp.writeByte(0x00); // number of keys
-        lpp.writeByte(0x00); // security flags
+        lpp.writeBytes(Buffer.from(reverseArrayBuffer(A)));
+        lpp.writeBytes(Buffer.from(M1));
+        lpp.writeBytes(Buffer.from(new Array(20))); // CRC hash
+        lpp.writeUInt8(0x00); // number of keys
+        lpp.writeUInt8(0x00); // security flags
 
         return new Promise((resolve, reject) => {
           this.once("packet:receive:LOGON_PROOF", async (ap: AuthPacket) => {
-            ap.readByte();
+            ap.readUInt8();
 
             console.info("received proof response");
 

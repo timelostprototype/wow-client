@@ -17,7 +17,7 @@ export class AuthPacket extends Packet {
   // Finalizes this packet
   finalize() {
     this.index = 0;
-    this.writeByte(this.opcode);
+    this.writeUInt8(this.opcode);
     return this;
   }
 }

@@ -1,12 +1,9 @@
-import * as ByteBuffer from "byte-buffer";
-
 import { Buffer } from "buffer";
 
 import { randomBytes, createHash } from "crypto";
 import { Crypt } from "../crypto/crypt";
 import { GameOpcode } from "./opcode";
 import { GamePacket } from "./packet";
-import { GUID } from "./guid";
 import { Socket } from "../net/socket";
 import { Client } from "../client.js";
 import { NotificationHandler } from "./handler/notification";
@@ -64,16 +61,22 @@ export class GameHandler extends Socket {
   send(packet: GamePacket) {
     const size = packet.bodySize + GamePacket.OPCODE_SIZE_OUTGOING;
 
-    packet.front();
-    packet.writeShort(size, ByteBuffer.BIG_ENDIAN);
-    packet.writeUnsignedInt(packet.opcode);
+    packet.index = 0;
+    packet.writeUInt16BE(size);
+    packet.writeUInt32LE(packet.opcode);
 
     // Encrypt header if needed
     if (this._crypt) {
       const encryptedHeader = this._crypt.encrypt(
         new Uint8Array(packet.buffer, 0, GamePacket.HEADER_SIZE_OUTGOING)
       );
-      packet._raw.set(encryptedHeader, 0);
+      Buffer.from(encryptedHeader).copy(
+        packet.buffer,
+        0,
+        0,
+        GamePacket.HEADER_SIZE_OUTGOING
+      );
+      //packet.buffer.set(encryptedHeader, 0);
     }
 
     return super.send(packet);
@@ -143,7 +146,7 @@ export class GameHandler extends Socket {
   handlePong(gp: GamePacket) {
     //console.log(`🏓  #${this.pingCount}`);
     this.pingReceived = true;
-    var ping = gp.readUnsignedInt(); // (0x01)
+    var ping = gp.readUInt32LE(); // (0x01)
   }
 
   ping() {
@@ -155,8 +158,8 @@ export class GameHandler extends Socket {
       GameOpcode.CMSG_PING,
       GamePacket.OPCODE_SIZE_INCOMING + 64
     );
-    app.writeUnsignedInt(this.pingCount);
-    app.writeUnsignedInt(Math.floor(Math.random() * 20) + 20); //latency, simulate jitter
+    app.writeUInt32LE(this.pingCount);
+    app.writeUInt32LE(Math.floor(Math.random() * 20) + 20); //latency, simulate jitter
 
     this.pingReceived = false;
     this.send(app);
@@ -167,16 +170,16 @@ export class GameHandler extends Socket {
   handleAuthChallenge(gp: GamePacket) {
     console.info("handling auth challenge");
 
-    gp.readUnsignedInt(); // (0x01)
+    gp.readUInt32LE(); // (0x01)
 
-    const salt = gp.read(4);
+    const salt = gp.readBytes(4);
     const seed = randomBytes(4);
 
     const hash = createHash("sha1");
     hash.update(this.session.auth.account);
     hash.update(new Uint8Array(4));
     hash.update(seed);
-    hash.update(salt._raw);
+    hash.update(salt);
     hash.update(this.session.auth.key);
     const digest = hash.digest();
 
@@ -211,21 +214,21 @@ export class GameHandler extends Socket {
       addonInfo.length;
 
     const app = new GamePacket(GameOpcode.CMSG_AUTH_PROOF, size);
-    app.writeUnsignedInt(build); // build
-    app.writeUnsignedInt(0); // (?)
-    app.writeCString(account); // account
-    app.writeUnsignedInt(0); // (?)
+    app.writeUInt32LE(build); // build
+    app.writeUInt32LE(0); // (?)
+    app.writeRawString(account); // account
+    app.writeUInt32LE(0); // (?)
 
-    app.write(seed); // client-seed
+    app.writeBytes(seed); // client-seed
 
-    app.writeUnsignedInt(0); //wotlk
-    app.writeUnsignedInt(0); //wotlk
-    app.writeUnsignedInt(this.realmId); //realm id
-    app.writeUnsignedInt(0); //wotlk
-    app.writeUnsignedInt(0); //wotlk
-    app.write(digest); // digest
+    app.writeUInt32LE(0); //wotlk
+    app.writeUInt32LE(0); //wotlk
+    app.writeUInt32LE(this.realmId); //realm id
+    app.writeUInt32LE(0); //wotlk
+    app.writeUInt32LE(0); //wotlk
+    app.writeBytes(digest); // digest
 
-    app.write(addonInfo);
+    app.writeBytes(Buffer.from(addonInfo));
 
     this.send(app);
 
@@ -237,7 +240,7 @@ export class GameHandler extends Socket {
     console.info("handling auth response");
 
     // Handle result byte
-    const result = gp.readUnsignedByte();
+    const result = gp.readUInt8();
     if (result === 0x0d) {
       console.warn("server-side auth/realm failure; try again");
       this.emit("reject");

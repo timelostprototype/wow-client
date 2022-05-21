@@ -29,8 +29,8 @@ export class CharacterHandler extends EventEmitter {
   }
 
   // Character list refresh handler (SMSG_CHAR_ENUM)
-  handleCharacterList(gp) {
-    const count = gp.readByte(); // number of characters
+  handleCharacterList(gp: GamePacket) {
+    const count = gp.readUInt8(); // number of characters
 
     this.list.length = 0;
 
@@ -38,28 +38,28 @@ export class CharacterHandler extends EventEmitter {
       const character = new Character();
 
       character.guid = gp.readGUID();
-      character.name = gp.readCString();
-      character.race = gp.readUnsignedByte();
-      character.class = gp.readUnsignedByte();
-      character.gender = gp.readUnsignedByte();
-      character.bytes = gp.readUnsignedInt();
-      character.facial = gp.readUnsignedByte();
-      character.level = gp.readUnsignedByte();
-      character.zone = gp.readUnsignedInt();
-      character.map = gp.readUnsignedInt();
-      character.x = gp.readFloat();
-      character.y = gp.readFloat();
-      character.z = gp.readFloat();
-      character.guild = gp.readUnsignedInt();
-      character.flags = gp.readUnsignedInt();
+      character.name = gp.readRawString();
+      character.race = gp.readUInt8();
+      character.class = gp.readUInt8();
+      character.gender = gp.readUInt8();
+      character.bytes = gp.readUInt32LE();
+      character.facial = gp.readUInt8();
+      character.level = gp.readUInt8();
+      character.zone = gp.readUInt32LE();
+      character.map = gp.readUInt32LE();
+      character.x = gp.readFloatLE();
+      character.y = gp.readFloatLE();
+      character.z = gp.readFloatLE();
+      character.guild = gp.readUInt32LE();
+      character.flags = gp.readUInt32LE();
 
-      gp.readUnsignedInt(); // character customization
-      gp.readUnsignedByte(); // (?)
+      gp.readUInt32LE(); // character customization
+      gp.readUInt8(); // (?)
 
       const pet = {
-        model: gp.readUnsignedInt(),
-        level: gp.readUnsignedInt(),
-        family: gp.readUnsignedInt(),
+        model: gp.readUInt32LE(),
+        level: gp.readUInt32LE(),
+        family: gp.readUInt32LE(),
       };
       if (pet.model) {
         character.pet = pet;
@@ -68,9 +68,9 @@ export class CharacterHandler extends EventEmitter {
       character.equipment = [];
       for (let j = 0; j < 23; ++j) {
         const item = {
-          model: gp.readUnsignedInt(),
-          type: gp.readUnsignedByte(),
-          enchantment: gp.readUnsignedInt(),
+          model: gp.readUInt32LE(),
+          type: gp.readUInt8(),
+          enchantment: gp.readUInt32LE(),
         };
         character.equipment.push(item);
       }

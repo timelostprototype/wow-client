@@ -7,7 +7,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "byte-buffer": "^2.0.0",
     "tssrp6a": "^3.0.0"
   },
   "devDependencies": {

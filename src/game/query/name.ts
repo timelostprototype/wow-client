@@ -8,7 +8,7 @@ export class NameQuery extends ClientRequest {
       return `SYSTEM`;
     }
     const app = new GamePacket(GameOpcode.CMSG_NAME_QUERY, 64);
-    app.writeUnsignedInt(guid);
+    app.writeUInt32LE(guid);
 
     return new Promise((resolve) => {
       this.game.once("packet:receive:SMSG_NAME_QUERY_RESPONSE", (gp) => {

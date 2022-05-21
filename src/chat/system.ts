@@ -11,10 +11,10 @@ export class SystemMessage extends Message {
   }
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
-    gp.readUnsignedInt();
-    gp.readUnsignedInt();
-    const len = gp.readUnsignedInt();
-    const text = gp.readString(len);
+    gp.readUInt32LE();
+    gp.readUInt32LE();
+    const len = gp.readUInt32LE();
+    const text = gp.readBytes(len).toString();
     return new SystemMessage(text);
   }
 }

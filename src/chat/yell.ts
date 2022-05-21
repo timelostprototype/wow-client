@@ -23,8 +23,8 @@ export class YellMessage extends Message {
   ): Promise<GamePacket> {
     const size = 64 + message.length;
     const app = new GamePacket(GameOpcode.CMSG_MESSAGE_CHAT, size);
-    app.writeUnsignedInt(YellMessage.type);
-    app.writeUnsignedInt(addon ? Language.LANG_ADDON : Language.LANG_UNIVERSAL);
+    app.writeUInt32LE(YellMessage.type);
+    app.writeUInt32LE(addon ? Language.LANG_ADDON : Language.LANG_UNIVERSAL);
     app.writeRawString(message);
     return app;
   }
