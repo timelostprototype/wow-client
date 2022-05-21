@@ -72,6 +72,15 @@ export class IndexedBuffer {
     }
   }
 
+  readRawString(): string {
+    const bytes = [];
+    while (bytes.indexOf(0) === -1) {
+      bytes.push(this.readUInt8());
+    }
+    bytes.pop();
+    return bytes.map((x) => String.fromCharCode(x)).join("");
+  }
+
   writeUInt8(val: number) {
     this.writeStandard(this.buffer.writeInt8, val, 1);
   }
@@ -129,6 +138,13 @@ export class IndexedBuffer {
     }
 
     this.writeBytes(Buffer.from(newArray));
+  }
+
+  writeRawString(str: string) {
+    str.split("").forEach((x) => {
+      this.writeUInt8(x.charCodeAt(0));
+    });
+    this.writeUInt8(0);
   }
 
   appendBytes(buffer: Buffer) {

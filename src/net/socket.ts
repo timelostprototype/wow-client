@@ -11,7 +11,7 @@ export class Socket extends EventEmitter {
 
   public socket?: NetSock;
 
-  protected buffer: IndexedBuffer = new IndexedBuffer();
+  public buffer: IndexedBuffer = new IndexedBuffer();
 
   constructor() {
     super();

@@ -176,15 +176,15 @@ export class GameHandler extends Socket {
     const seed = randomBytes(4);
 
     const hash = createHash("sha1");
-    hash.update(this.session.auth.account);
+    hash.update(this.session.realmServer.config.account);
     hash.update(new Uint8Array(4));
     hash.update(seed);
     hash.update(salt);
-    hash.update(this.session.auth.key);
+    hash.update(this.session.realmServer.key);
     const digest = hash.digest();
 
     const build = this.session.config.build;
-    const account = this.session.auth.account;
+    const account = this.session.realmServer.config.account;
 
     const addonInfo = [
       0x56, 0x01, 0x00, 0x00, 0x78, 0x9c, 0x75, 0xcc, 0xbd, 0x0e, 0xc2, 0x30,
@@ -204,7 +204,7 @@ export class GameHandler extends Socket {
     const size =
       GamePacket.HEADER_SIZE_OUTGOING +
       8 +
-      this.session.auth.account.length +
+      this.session.realmServer.config.account.length +
       1 +
       4 +
       4 +
@@ -232,7 +232,7 @@ export class GameHandler extends Socket {
 
     this.send(app);
 
-    this._crypt = new Crypt(this.session.auth.key);
+    this._crypt = new Crypt(this.session.realmServer.key);
   }
 
   // Auth response handler (SMSG_AUTH_RESPONSE)

@@ -1,5 +1,5 @@
 import { AuthOpcode } from "./opcode";
-import { Packet } from "../net/packet";
+import { Packet } from "../../net/packet";
 
 export class AuthPacket extends Packet {
   // Header size in bytes for both incoming and outgoing packets

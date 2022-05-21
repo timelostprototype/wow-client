@@ -6,9 +6,7 @@
   "scripts": {
     "test": "jest"
   },
-  "dependencies": {
-    "tssrp6a": "^3.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "dotenv-cli": "^5.1.0",
