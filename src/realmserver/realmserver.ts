@@ -1,12 +1,12 @@
 import { EventEmitter } from "events";
 
 import { AuthPacket } from "./auth/packet";
-import { IndexedBuffer } from "../net/indexed-buffer";
-import { Socket } from "../net/socket";
+import { Socket } from "../common/net/socket";
 import { Config } from "../config";
 import { AuthHandler } from "./auth/handler";
 import { Realm } from "./realms/realm";
 import { RealmsHandler } from "./realms/handler";
+import { IndexedBuffer } from "../common/net/indexed-buffer";
 
 export interface RealmServerConfig {
   account: string;

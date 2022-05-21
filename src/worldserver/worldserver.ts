@@ -1,15 +1,15 @@
 import { EventEmitter } from "events";
 import { Config } from "../config";
 
-import { Crypt } from "../crypto/crypt";
+import { Arc4 } from "../common/crypto/arc4";
 import { PlayerNotFoundHandler } from "./handler/player-not-found";
 import { NotificationHandler } from "./handler/notification";
 import { MessageHandler } from "./handler/message";
 import { TimeSyncHandler } from "./handler/time-sync";
 import { GameOpcode } from "./opcode";
 import { GamePacket } from "./packet";
-import { IndexedBuffer } from "../net/indexed-buffer";
-import { Socket } from "../net/socket";
+import { IndexedBuffer } from "../common/net/indexed-buffer";
+import { Socket } from "../common/net/socket";
 import { Realm } from "../realmserver/realms/realm";
 import { WorldAuthHandler } from "./auth/handler";
 import { Character } from "./characters/character";
@@ -21,7 +21,7 @@ export interface WorldServerConfig {
 
 export class WorldServer extends EventEmitter {
   public socket: Socket;
-  private arc4: Crypt = null;
+  private arc4: Arc4 = null;
   private remaining = -1;
   private pingCount = 1;
   private pingReceived = true;
@@ -46,7 +46,7 @@ export class WorldServer extends EventEmitter {
   }
 
   beginArc4() {
-    this.arc4 = new Crypt(this.key);
+    this.arc4 = new Arc4(this.key);
   }
 
   async connect(realm: Realm, key: Uint8Array) {

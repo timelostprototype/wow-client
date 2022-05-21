@@ -5,7 +5,7 @@ import { AuthOpcode } from "./opcode";
 import { AuthPacket } from "./packet";
 
 import { RealmServer } from "../realmserver";
-import { LogonChallengePacket, SRP } from "../../crypto/srp";
+import { LogonChallengePacket, SRP } from "../../common/crypto/srp";
 
 export class AuthHandler {
   constructor(private realmServer: RealmServer) {}

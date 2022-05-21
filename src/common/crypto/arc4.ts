@@ -1,23 +1,20 @@
 import { createHmac, createCipheriv, createDecipheriv, Cipher } from "crypto";
 
-export class Crypt {
+export class Arc4 {
+  static ENCRYPTION_KEY = "C2B3723CC6AED9B5343C53EE2F4367CE";
+  static DECRYPTION_KEY = "CC98AE04E897EACA12DDC09342915357";
+
   private encCipher: Cipher = null;
   private decCipher: Cipher = null;
-  // Creates crypt
+
   constructor(key: Uint8Array) {
     console.info("initializing crypt");
 
-    this.encCipher = createCipheriv(
-      "rc4",
-      Crypt.hashKey("C2B3723CC6AED9B5343C53EE2F4367CE", key),
-      ""
-    );
+    const encKey = Arc4.hashKey(Arc4.ENCRYPTION_KEY, key);
+    const decKey = Arc4.hashKey(Arc4.DECRYPTION_KEY, key);
 
-    this.decCipher = createDecipheriv(
-      "rc4",
-      Crypt.hashKey("CC98AE04E897EACA12DDC09342915357", key),
-      ""
-    );
+    this.encCipher = createCipheriv("rc4", encKey, "");
+    this.decCipher = createDecipheriv("rc4", decKey, "");
 
     // Ensure the buffer is synchronized
     const syncData = new Uint8Array(1024);

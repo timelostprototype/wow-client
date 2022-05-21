@@ -1,4 +1,4 @@
-import { Packet } from "../net/packet";
+import { Packet } from "../common/net/packet";
 import { GameOpcode } from "./opcode";
 import { GUID } from "./guid";
 

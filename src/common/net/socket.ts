@@ -3,7 +3,7 @@ import { Socket as NetSock } from "net";
 import { Packet } from "./packet";
 import { Buffer } from "buffer";
 import { IndexedBuffer } from "./indexed-buffer";
-import { GameOpcode } from "../worldserver/opcode";
+import { GameOpcode } from "../../worldserver/opcode";
 
 export class Socket {
   public host?: string;
