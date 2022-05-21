@@ -18,7 +18,7 @@ export interface RealmServerConfig {
 export class RealmServer extends EventEmitter {
   static DEFAULT_PORT = 3724;
 
-  public socket: Socket = new Socket();
+  public socket: Socket;
   private authHandler: AuthHandler;
   private realmsHandler: RealmsHandler;
 
@@ -27,9 +27,9 @@ export class RealmServer extends EventEmitter {
 
   constructor(public config: RealmServerConfig, public clientConfig: Config) {
     super();
+    this.socket = new Socket(this.dataReceived.bind(this));
     this.authHandler = new AuthHandler(this);
     this.realmsHandler = new RealmsHandler(this);
-    this.socket.on("data:receive", this.dataReceived.bind(this));
   }
 
   async connect() {
@@ -45,7 +45,7 @@ export class RealmServer extends EventEmitter {
 
   dataReceived(buffer: IndexedBuffer) {
     while (true) {
-      if (this.socket.buffer.available < AuthPacket.HEADER_SIZE) {
+      if (buffer.available < AuthPacket.HEADER_SIZE) {
         return;
       }
       const opcode = buffer.readUInt8();

@@ -1,21 +1,19 @@
 import { EventEmitter } from "events";
 import { Socket as NetSock } from "net";
-import { GameOpcode } from "../game/opcode";
 import { Packet } from "./packet";
 import { Buffer } from "buffer";
 import { IndexedBuffer } from "./indexed-buffer";
+import { GameOpcode } from "../worldserver/opcode";
 
-export class Socket extends EventEmitter {
+export class Socket {
   public host?: string;
   public port?: number;
 
   public socket?: NetSock;
 
-  public buffer: IndexedBuffer = new IndexedBuffer();
+  private buffer: IndexedBuffer = new IndexedBuffer();
 
-  constructor() {
-    super();
-  }
+  constructor(private onData: (buf: IndexedBuffer) => void) {}
 
   get connected() {
     return this.socket;
@@ -31,13 +29,12 @@ export class Socket extends EventEmitter {
         sock.on("data", (data: Buffer) => {
           this.buffer.appendBytes(data);
           this.buffer.clip();
-          this.emit("data:receive", this.buffer);
+          this.onData(this.buffer);
         });
 
         sock.on("close", (e) => {
           console.info("Socket close: " + this.port);
           console.info(e);
-          this.emit("disconnect", e);
         });
 
         sock.on("error", (err) => {
@@ -90,8 +87,6 @@ export class Socket extends EventEmitter {
       }
 
       this.socket.write(packet.buffer);
-
-      this.emit("packet:send", packet);
 
       return true;
     }
