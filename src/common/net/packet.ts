@@ -30,7 +30,7 @@ export class Packet extends IndexedBuffer {
 
   // Retrieves the name of the opcode for this packet (if available)
   get opcodeName() {
-    return null;
+    return "";
   }
 
   // Short string representation of this packet

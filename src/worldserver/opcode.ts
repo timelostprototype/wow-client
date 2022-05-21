@@ -151,7 +151,7 @@ export enum GameOpcode {
 export namespace GameOpcode {
   export function toString(opcode: GameOpcode) {
     return Object.keys(GameOpcode).find(
-      (key) => GameOpcode[key] === opcode
+      (key) => (GameOpcode as any)[key] === opcode
     ) as string;
   }
 }

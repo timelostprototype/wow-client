@@ -37,7 +37,7 @@ export class MessageParser {
       senderName = await new NameQuery(this.world).send(guid.toNumber());
     }
 
-    let message: Message;
+    let message: Message | undefined;
     for (let msgType of MESSAGE_TYPES) {
       if (type === msgType.type) {
         message = await msgType.fromPacket(gp);
@@ -45,6 +45,9 @@ export class MessageParser {
     }
     if (!message) {
       message = await Message.fromPacket(gp);
+    }
+    if (!message) {
+      return message;
     }
     message.language = lang;
     message.sender = guid;

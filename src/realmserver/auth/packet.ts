@@ -5,7 +5,7 @@ export class AuthPacket extends Packet {
   // Header size in bytes for both incoming and outgoing packets
   static HEADER_SIZE = 1;
 
-  constructor(opcode: AuthOpcode, source, outgoing = true) {
+  constructor(opcode: AuthOpcode, source: Buffer | number, outgoing = true) {
     super(opcode as number, source || AuthPacket.HEADER_SIZE, outgoing);
   }
 

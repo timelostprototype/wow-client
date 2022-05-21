@@ -8,13 +8,13 @@ export class SayMessage extends Message {
   static type = MessageType.CHAT_MSG_SAY;
   static color = ChatColor.Say;
 
-  constructor(text: string) {
+  constructor(text?: string) {
     super(text);
   }
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
     const msg = await Message.fromPacket(gp);
-    return new SayMessage(msg.text);
+    return new SayMessage(msg?.text);
   }
 
   static async toPacket(

@@ -9,7 +9,7 @@ export enum AuthOpcode {
 export namespace AuthOpcode {
   export function toString(opcode: AuthOpcode) {
     return Object.keys(AuthOpcode).find(
-      (key) => AuthOpcode[key] === opcode
+      (key) => (AuthOpcode as any)[key] === opcode
     ) as string;
   }
 }

@@ -25,11 +25,11 @@ export class Message {
   protected static color = ChatColor.System;
 
   public isGm: boolean = false;
-  public language: number;
-  public sender: GUID;
-  public senderName: string;
+  public language: number = -1;
+  public sender?: GUID;
+  public senderName: string = "";
 
-  constructor(public text: string) {}
+  constructor(public text: string = "") {}
 
   get type() {
     return this.ctor.type;

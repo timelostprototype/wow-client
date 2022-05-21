@@ -3,7 +3,7 @@ import { GamePacket } from "../packet";
 import { ClientRequest } from "./query";
 
 export class NameQuery extends ClientRequest {
-  async send(guid: number): Promise<string | null> {
+  async send(guid: number): Promise<string> {
     if (guid === 0) {
       return `SYSTEM`;
     }
@@ -14,6 +14,9 @@ export class NameQuery extends ClientRequest {
       this.world.once("packet:receive:SMSG_NAME_QUERY_RESPONSE", (gp) => {
         const guid = gp.readPackedGUID();
         const name_known = gp.readUnsignedByte();
+        if (!name_known) {
+          return resolve("");
+        }
         const name = gp.readCString();
         resolve(name);
       });

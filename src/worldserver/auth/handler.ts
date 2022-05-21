@@ -24,7 +24,7 @@ export class WorldAuthHandler {
           hash.update(new Uint8Array(4));
           hash.update(seed);
           hash.update(salt);
-          hash.update(this.worldServer.key);
+          hash.update(this.worldServer.key!);
           const digest = hash.digest();
 
           const build = this.worldServer.clientConfig.build;
@@ -67,7 +67,7 @@ export class WorldAuthHandler {
 
           app.writeUInt32LE(0); //wotlk
           app.writeUInt32LE(0); //wotlk
-          app.writeUInt32LE(this.worldServer.realm.id); //realm id
+          app.writeUInt32LE(this.worldServer.realm?.id || 0); //realm id
           app.writeUInt32LE(0); //wotlk
           app.writeUInt32LE(0); //wotlk
           app.writeBytes(digest); // digest

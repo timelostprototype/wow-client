@@ -8,13 +8,13 @@ export class GuildMessage extends Message {
   static type = MessageType.CHAT_MSG_GUILD;
   static color = ChatColor.Guild;
 
-  constructor(text: string) {
+  constructor(text?: string) {
     super(text);
   }
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
     const msg = await Message.fromPacket(gp);
-    return new GuildMessage(msg.text);
+    return new GuildMessage(msg?.text);
   }
 
   static async toPacket(

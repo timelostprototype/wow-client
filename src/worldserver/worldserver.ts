@@ -14,22 +14,26 @@ import { Realm } from "../realmserver/realms/realm";
 import { WorldAuthHandler } from "./auth/handler";
 import { Character } from "./characters/character";
 import { CharacterHandler } from "./characters/handler";
+import { Packet } from "../common/net/packet";
 
 export interface WorldServerConfig {
   account: string;
 }
 
 export class WorldServer extends EventEmitter {
-  public socket: Socket;
-  private arc4: Arc4 = null;
+  private socket: Socket;
+  private lastDecryptedHeader: Buffer = Buffer.alloc(0);
+  private arc4?: Arc4;
   private remaining = -1;
   private pingCount = 1;
   private pingReceived = true;
-  public key: Uint8Array = null;
-  public realm: Realm = null;
+
   private authHandler: WorldAuthHandler;
   private charactersHandler: CharacterHandler;
-  public characters: Character[];
+
+  public characters: Character[] = [];
+  public key?: Uint8Array;
+  public realm?: Realm;
 
   constructor(public config: WorldServerConfig, public clientConfig: Config) {
     super();
@@ -46,7 +50,7 @@ export class WorldServer extends EventEmitter {
   }
 
   beginArc4() {
-    this.arc4 = new Arc4(this.key);
+    this.arc4 = new Arc4(this.key!);
   }
 
   async connect(realm: Realm, key: Uint8Array) {
@@ -59,7 +63,6 @@ export class WorldServer extends EventEmitter {
 
   async join() {}
 
-  private lastDecryptedHeader: Buffer = null;
   // Data received handler
   dataReceived(indexedBuffer: IndexedBuffer) {
     while (true) {

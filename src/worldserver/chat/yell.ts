@@ -8,13 +8,13 @@ export class YellMessage extends Message {
   static type = MessageType.CHAT_MSG_YELL;
   static color = ChatColor.Yell;
 
-  constructor(text: string) {
+  constructor(text?: string) {
     super(text);
   }
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
     const msg = await Message.fromPacket(gp);
-    return new YellMessage(msg.text);
+    return new YellMessage(msg?.text);
   }
 
   static async toPacket(

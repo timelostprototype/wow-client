@@ -23,7 +23,7 @@ export class SRP {
   constructor(private account: string, private password: string) {}
 
   static arrayBufferReverseToInt = (arrayBuffer: ArrayBuffer) => {
-    const hex = [];
+    const hex: string[] = [];
     new Uint8Array(arrayBuffer).reverse().forEach((i) => {
       hex.push(("0" + i.toString(16)).slice(-2));
     });

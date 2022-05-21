@@ -11,7 +11,7 @@ export class GamePacket extends Packet {
   static OPCODE_SIZE_INCOMING = 2;
   static OPCODE_SIZE_OUTGOING = 4;
 
-  constructor(opcode: GameOpcode, source?, outgoing = true) {
+  constructor(opcode: GameOpcode, source?: Buffer | number, outgoing = true) {
     if (!source) {
       source = outgoing
         ? GamePacket.HEADER_SIZE_OUTGOING

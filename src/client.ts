@@ -24,7 +24,7 @@ export class Client {
     console.log("🔑 Authenticated");
     const realms = this.realmServer.realms;
     const realm1 = realms[0];
-    await this.worldServer.connect(realm1, this.realmServer.key);
+    await this.worldServer.connect(realm1, this.realmServer.key!);
 
     const character1 = this.worldServer.characters[0];
     await new JoinWorldQuery(this.worldServer).join(character1);

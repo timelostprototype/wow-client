@@ -4,8 +4,8 @@ export class Arc4 {
   static ENCRYPTION_KEY = "C2B3723CC6AED9B5343C53EE2F4367CE";
   static DECRYPTION_KEY = "CC98AE04E897EACA12DDC09342915357";
 
-  private encCipher: Cipher = null;
-  private decCipher: Cipher = null;
+  private encCipher: Cipher;
+  private decCipher: Cipher;
 
   constructor(key: Uint8Array) {
     console.info("initializing crypt");

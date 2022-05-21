@@ -48,12 +48,12 @@ export class AuthHandler {
   }
 
   private decodeLogonChallenge(ap: AuthPacket): LogonChallengePacket {
-    const packet = {
+    const packet: LogonChallengePacket = {
       status: -1,
-      B: null,
-      g: null,
-      N: null,
-      salt: null,
+      B: BigInt(-1),
+      g: BigInt(-1),
+      N: BigInt(-1),
+      salt: BigInt(-1),
     };
     ap.readUInt8();
     packet.status = ap.readUInt8();
@@ -113,7 +113,7 @@ export class AuthHandler {
                 }
               );
 
-              this.realmServer.socket.send(lpp);
+              this.realmServer.send(lpp);
 
               break;
             case ChallengeOpcode.ACCOUNT_INVALID:
@@ -125,7 +125,7 @@ export class AuthHandler {
           }
         }
       );
-      this.realmServer.socket.send(this.prepareAuthRequestPacket());
+      this.realmServer.send(this.prepareAuthRequestPacket());
     });
   }
 }

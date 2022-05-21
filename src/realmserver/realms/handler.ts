@@ -30,7 +30,7 @@ export class RealmsHandler {
           realm.id = ap.readUInt8();
 
           // TODO: Introduce magic constants such as REALM_FLAG_SPECIFYBUILD
-          if (realm.flags & 0x04) {
+          if (realm.flags && realm.flags & 0x04) {
             realm.majorVersion = ap.readUInt8();
             realm.minorVersion = ap.readUInt8();
             realm.patchVersion = ap.readUInt8();
@@ -45,7 +45,7 @@ export class RealmsHandler {
       const ap = new AuthPacket(AuthOpcode.REALM_LIST, 1 + 4);
       // Per WoWDev, the opcode is followed by an unknown uint32
       ap.writeUInt32LE(0x00);
-      this.realmServer.socket.send(ap);
+      this.realmServer.send(ap);
     });
   }
 }

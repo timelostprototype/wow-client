@@ -18,12 +18,12 @@ export interface RealmServerConfig {
 export class RealmServer extends EventEmitter {
   static DEFAULT_PORT = 3724;
 
-  public socket: Socket;
+  private socket: Socket;
   private authHandler: AuthHandler;
   private realmsHandler: RealmsHandler;
 
-  public key: Uint8Array = null;
-  public realms: Realm[];
+  public key?: Uint8Array;
+  public realms: Realm[] = [];
 
   constructor(public config: RealmServerConfig, public clientConfig: Config) {
     super();
@@ -62,5 +62,9 @@ export class RealmServer extends EventEmitter {
         this.emit(`packet:receive:${ap.opcodeName}`, ap);
       }
     }
+  }
+
+  send(ap: AuthPacket) {
+    this.socket.send(ap);
   }
 }

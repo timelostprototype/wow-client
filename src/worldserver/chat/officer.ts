@@ -8,13 +8,13 @@ export class OfficerMessage extends Message {
   static type = MessageType.CHAT_MSG_OFFICER;
   static color = ChatColor.Officer;
 
-  constructor(text: string) {
+  constructor(text?: string) {
     super(text);
   }
 
   static async fromPacket(gp: GamePacket): Promise<Message> {
     const msg = await Message.fromPacket(gp);
-    return new OfficerMessage(msg.text);
+    return new OfficerMessage(msg?.text);
   }
 
   static async toPacket(

@@ -6,8 +6,8 @@ import { IndexedBuffer } from "./indexed-buffer";
 import { GameOpcode } from "../../worldserver/opcode";
 
 export class Socket {
-  public host?: string;
-  public port?: number;
+  public host: string = "";
+  public port: number = NaN;
 
   public socket?: NetSock;
 
@@ -15,14 +15,10 @@ export class Socket {
 
   constructor(private onData: (buf: IndexedBuffer) => void) {}
 
-  get connected() {
-    return this.socket;
-  }
-
   async connect(host: string, port = NaN) {
     this.host = host;
     this.port = port;
-    if (!this.connected) {
+    if (!this.socket) {
       return new Promise((resolve, reject) => {
         const sock = new NetSock();
 
@@ -53,9 +49,13 @@ export class Socket {
     }
   }
 
+  get connected(): boolean {
+    return !!this.socket;
+  }
+
   // Attempts to reconnect to cached host and port
   reconnect() {
-    if (!this.connected && this.host && this.port) {
+    if (!this.socket && this.host && this.port) {
       this.connect(this.host, this.port);
     }
     return this;
@@ -63,15 +63,15 @@ export class Socket {
 
   // Disconnects this socket
   disconnect() {
-    if (this.connected) {
-      this.socket.end();
+    if (this.socket) {
+      this.socket?.end();
     }
     return this;
   }
 
   // Finalizes and sends given packet
   send(packet: Packet) {
-    if (this.connected) {
+    if (this.socket) {
       packet.finalize();
 
       const filterOpcodes = [
@@ -86,7 +86,7 @@ export class Socket {
         console.debug("\t\u001b[36m⟸\u001b[0m", packet.toString());
       }
 
-      this.socket.write(packet.buffer);
+      this.socket?.write(packet.buffer);
 
       return true;
     }
