@@ -14,7 +14,8 @@ import { Realm } from "../realmserver/realms/realm";
 import { WorldAuthHandler } from "./auth/handler";
 import { Character } from "./characters/character";
 import { CharacterHandler } from "./characters/handler";
-import { Packet } from "../common/net/packet";
+import { CompressedUpdateObjectHandler } from "./handler/compressed-update-object";
+import { UpdateObjectHandler } from "./handler/update-object";
 
 export interface WorldServerConfig {
   account: string;
@@ -46,6 +47,8 @@ export class WorldServer extends EventEmitter {
       new TimeSyncHandler(this),
       new MessageHandler(this),
       new PlayerNotFoundHandler(this),
+      new CompressedUpdateObjectHandler(this),
+      new UpdateObjectHandler(this),
     ];
   }
 
@@ -131,15 +134,10 @@ export class WorldServer extends EventEmitter {
 
     // Encrypt header if needed
     if (this.arc4) {
-      const encryptedHeader = this.arc4.encrypt(
-        new Uint8Array(packet.buffer, 0, GamePacket.HEADER_SIZE_OUTGOING)
-      );
-      Buffer.from(encryptedHeader).copy(
-        packet.buffer,
-        0,
-        0,
-        GamePacket.HEADER_SIZE_OUTGOING
-      );
+      const header = Buffer.alloc(GamePacket.HEADER_SIZE_OUTGOING);
+      packet.buffer.copy(header);
+      const encryptedHeader = this.arc4.encrypt(new Uint8Array(header));
+      Buffer.from(encryptedHeader).copy(packet.buffer);
     }
 
     return this.socket.send(packet);

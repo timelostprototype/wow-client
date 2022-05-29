@@ -145,7 +145,7 @@ export enum GameOpcode {
 
   SMSG_TALENTS_INFO = 0x04c0,
 
-  MSG_SET_RAID_DIFFICULTY = 0x04eb,
+  CMSG_SET_RAID_DIFFICULTY = 0x04eb,
 }
 
 export namespace GameOpcode {

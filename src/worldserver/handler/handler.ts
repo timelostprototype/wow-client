@@ -8,7 +8,8 @@ export abstract class GameEventHandler {
   constructor(protected world: WorldServer) {
     const opcode: GameOpcode = (<typeof GameEventHandler>this.constructor)
       .opcode;
-    world.on(`packet:receive:${opcode.toString()}`, this.handle.bind(this));
+    const opcodeName = GameOpcode.toString(opcode);
+    world.on(`packet:receive:${opcodeName}`, this.handle.bind(this));
   }
 
   abstract handle(gp: GamePacket): void;

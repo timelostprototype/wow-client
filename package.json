@@ -1,7 +1,7 @@
 {
   "name": "@timelostprototype/wow-client",
-  "version": "0.0.2",
-  "repository": "github:timelosprototype/wow-client",
+  "version": "0.0.4",
+  "repository": "github:timelostprototype/wow-client",
   "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
