@@ -1,6 +1,4 @@
-import { EventEmitter } from "events";
-
-import { Config } from "./config";
+import { Config } from "./common/config/config";
 import { RealmServer } from "./realmserver/realmserver";
 import { JoinWorldQuery } from "./worldserver/query/join-world";
 import { WorldServer } from "./worldserver/worldserver";

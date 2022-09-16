@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { Config } from "../config";
+import { Config } from "../common/config/config";
 
 import { Arc4 } from "../common/crypto/arc4";
 import { PlayerNotFoundHandler } from "./handler/player-not-found";

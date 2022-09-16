@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 
 import { AuthPacket } from "./auth/packet";
 import { Socket } from "../common/net/socket";
-import { Config } from "../config";
+import { Config } from "../common/config/config";
 import { AuthHandler } from "./auth/handler";
 import { Realm } from "./realms/realm";
 import { RealmsHandler } from "./realms/handler";

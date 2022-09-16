@@ -8,15 +8,13 @@ export class Arc4 {
   private decCipher: Cipher;
 
   constructor(key: Uint8Array) {
-    console.info("initializing crypt");
-
     const encKey = Arc4.hashKey(Arc4.ENCRYPTION_KEY, key);
     const decKey = Arc4.hashKey(Arc4.DECRYPTION_KEY, key);
 
     this.encCipher = createCipheriv("rc4", encKey, "");
     this.decCipher = createDecipheriv("rc4", decKey, "");
 
-    // Ensure the buffer is synchronized
+    // Ensure the buffer is synchronized (Arc4-drop1024)
     const syncData = new Uint8Array(1024);
     this.encCipher.update(syncData);
     this.decCipher.update(syncData);
