@@ -9,7 +9,7 @@ This is a headless client library for World of Warcraft written in Typescript, c
 `npm i @timelostprototype/wow-client`
 
 ```ts
-import { Client } from "@timelostprototype/wow-client";
+import { Client, Message } from "@timelostprototype/wow-client";
 
 const client = new Client(
   "logon.example.com", //Realmlist
@@ -18,15 +18,14 @@ const client = new Client(
 );
 
 //expect event names to change in the near future
-client.game.on('message', (msg: Message)) => {
-    //msg.logLine converts WoW color codes etc into ASNI escape codes for the terminal
-    console.log(msg.logLine);
+client.game.on("message", (msg: Message) => {
+  //msg.logLine converts WoW color codes etc into ASNI escape codes for the terminal
+  console.log(msg.logLine);
 });
 
 async function bootstrap() {
   //helper function for quick start, may go away
   await client.connectToFirstRealmWithFirstCharacter();
-
 }
 bootstrap();
 ```

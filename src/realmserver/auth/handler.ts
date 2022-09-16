@@ -17,7 +17,9 @@ export class AuthHandler {
       minorVersion,
       patchVersion,
       game,
-      raw: { os, locale, platform },
+      os,
+      locale,
+      platform,
       timezone,
     } = this.realmServer.clientConfig;
 
@@ -27,20 +29,25 @@ export class AuthHandler {
       AuthOpcode.LOGON_CHALLENGE,
       4 + 29 + 1 + account.length
     );
-    ap.writeUInt8(0x00);
+    ap.writeUInt8(0x08);
     ap.writeUInt16LE(30 + account.length);
 
     const rawGameBytes = game.split("").map((x) => x.charCodeAt(0));
-    ap.writeBytes(Buffer.from(game)); // game string
+    ap.writeRawString(game.split("").reverse().join("")); // game string
     ap.writeUInt8(majorVersion); // v1 (major)
     ap.writeUInt8(minorVersion); // v2 (minor)
     ap.writeUInt8(patchVersion); // v3 (patch)
     ap.writeUInt16LE(build); // build
-    ap.writeBytes(Buffer.from(platform)); // platform
-    ap.writeBytes(Buffer.from(os)); // os
-    ap.writeBytes(Buffer.from(locale)); // locale
-    ap.writeUInt32LE(timezone); // timezone
-    ap.writeUInt32LE(0); // ip
+    ap.writeRawString(platform.split("").reverse().join("")); // platform
+    ap.writeRawString(os.split("").reverse().join("")); // os
+    ap.writeRawString(locale.split("").reverse().join("")); // locale
+    ap.writeUInt8(0); // timezone
+    ap.writeUInt8(0); // timezone
+    ap.writeUInt8(0); // timezone
+    ap.writeUInt8(127); // ip
+    ap.writeUInt8(0); // ip
+    ap.writeUInt8(0); // ip
+    ap.writeUInt8(1); // ip
     ap.writeUInt8(account.length); // account length
     ap.writeBytes(Buffer.from(account)); // account
 
