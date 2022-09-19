@@ -18,6 +18,10 @@ export class IndexedBuffer {
     return this.buffer.length - this.index;
   }
 
+  readBoolean() {
+    return !!this.readStandard(this.buffer.readUint8, 1);
+  }
+
   readUInt8() {
     return this.readStandard(this.buffer.readUint8, 1);
   }
