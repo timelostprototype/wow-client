@@ -97,6 +97,9 @@ export class WorldServer extends EventEmitter {
           .copy(data, GamePacket.HEADER_SIZE_INCOMING);
 
         const gp = new GamePacket(opcode, data, false);
+        if (opcode === GameOpcode.SMSG_PONG) {
+          this.handlePong(gp);
+        }
 
         this.remaining = -1;
 
