@@ -18,7 +18,7 @@ const client = new Client(
 );
 
 //expect event names to change in the near future
-client.game.on("message", (msg: Message) => {
+client.worldServer.on("message", (msg: Message) => {
   //msg.logLine converts WoW color codes etc into ASNI escape codes for the terminal
   console.log(msg.logLine);
 });
