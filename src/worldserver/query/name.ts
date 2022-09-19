@@ -13,7 +13,7 @@ export class NameQuery extends ClientRequest {
     return new Promise((resolve) => {
       this.world.once("packet:receive:SMSG_NAME_QUERY_RESPONSE", (gp) => {
         const guid = gp.readPackedGUID();
-        const name_known = gp.readUInt8();
+        const name_known = gp.readBoolean();
         if (!name_known) {
           return resolve("");
         }
