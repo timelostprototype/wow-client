@@ -13,11 +13,11 @@ export class NameQuery extends ClientRequest {
     return new Promise((resolve) => {
       this.world.once("packet:receive:SMSG_NAME_QUERY_RESPONSE", (gp) => {
         const guid = gp.readPackedGUID();
-        const name_known = gp.readUnsignedByte();
+        const name_known = gp.readUInt8();
         if (!name_known) {
           return resolve("");
         }
-        const name = gp.readCString();
+        const name = gp.readRawString();
         resolve(name);
       });
       this.world.send(app);
